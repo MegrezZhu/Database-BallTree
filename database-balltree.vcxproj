@@ -18,6 +18,15 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\BallTree.h" />
+    <ClInclude Include="src\Utility.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\BallTree.cpp" />
+    <ClCompile Include="src\test.cpp" />
+    <ClCompile Include="src\Utility.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B4776A15-BACE-430F-8EC2-2A10DA76504C}</ProjectGuid>
     <RootNamespace>databaseballtree</RootNamespace>
@@ -109,8 +118,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

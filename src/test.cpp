@@ -1,13 +1,15 @@
 #include <iostream>
+#include <ctime>
 
 #include "BallTree.h"
 #include "Utility.h"
 
-#define YAHOO
+// #define MINIMAL
+#define NETFLIX
 
 #ifdef MNIST
 char dataset[L] = "Mnist";
-int n = 600, d = 50;
+int n = 60000, d = 50;
 int qn = 1000;
 #endif
 
@@ -16,6 +18,19 @@ char dataset[L] = "Yahoo";
 int n = 624, d = 300;
 int qn = 1000;
 #endif
+
+#ifdef MINIMAL
+char dataset[L] = "Minimal";
+int n = 25, d = 2;
+int qn = 1;
+#endif
+
+#ifdef NETFLIX
+char dataset[L] = "Netflix";
+int n = 17770, d = 50;
+int qn = 1000;
+#endif // NETFLIX
+
 
 int main() {
 	char data_path[L], query_path[L];
@@ -28,7 +43,10 @@ int main() {
 	sprintf(index_path, "%s/index", dataset);
 	sprintf(output_path, "%s/dst/answer.txt", dataset);
 
+	srand(time(NULL));
+
 	if (!read_data(n, d, data, data_path)) {
+		system("pause");
 		return 1;
 	}
 
@@ -40,13 +58,22 @@ int main() {
 	FILE* fout = fopen(output_path, "w");
 	if (!fout) {
 		printf("can't open %s!\n", output_path);
+		system("pause");
 		return 1;
 	}
 
-	BallTree ball_tree2;
+	/*
+	BallTree ball_tree2; 
 	ball_tree2.restoreTree(index_path);
 	for (int i = 0; i < qn; i++) {
 		int index = ball_tree2.mipSearch(d, query[i]);
+		fprintf(fout, "%d\n", index);
+	}
+	fclose(fout);
+	*/
+
+	for (int i = 0; i < qn; i++) {
+		int index = ball_tree1.mipSearch(d, query[i]);
 		fprintf(fout, "%d\n", index);
 	}
 	fclose(fout);
@@ -58,6 +85,7 @@ int main() {
 	for (int i = 0; i < qn; i++) {
 		delete[] query[i];
 	}
-
+	
+	system("pause");
 	return 0;
 }

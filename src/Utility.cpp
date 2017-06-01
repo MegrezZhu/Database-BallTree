@@ -104,19 +104,17 @@ pair<float*, float*> getSplitCenter(int n, int d, float** data) {
 }
 
 int makeSplit(int n, int d, float** data, int* id, pair<float*, float*> centers) {
-	int numB = 0;
-
-	int pos = 0;
-	while (pos + 1 + numB <= n) {
-		if (distance2(data[pos], centers.first, d) > distance2(data[pos], centers.second, d)) {
+	int numA = 0, numB = 0;
+	while (numA + numB < n) {
+		if (distance2(data[numA], centers.first, d) > distance2(data[numA], centers.second, d)) {
 			++numB;
-			swap(data[pos], data[n - numB]);
-			swap(id[pos], id[n - numB]);
+			swap(data[numA], data[n - numB]);
+			swap(id[numA], id[n - numB]);
 		}
 		else {
-			pos++;
+			++numA;
 		}
 	}
 
-	return n - numB;
+	return numA;
 }

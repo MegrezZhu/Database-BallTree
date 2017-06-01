@@ -77,29 +77,25 @@ float norm(float* vec, int d) {
 	return sqrt(dis2);
 }
 
+float* getFarestVector(float* ori, int n, int d, float** data) {
+	float* maxV = data[0];
+	float maxD = distance2(maxV, ori, d);
+	for (int i = 1; i < n; i++) {
+		auto tmp = distance2(data[i], ori, d);
+		if (tmp > maxD) {
+			maxD = tmp;
+			maxV = data[i];
+		}
+	}
+	return maxV;
+}
+
 pair<float*, float*> getSplitCenter(int n, int d, float** data) {
 	float *randOne = data[rand() % n];
 
-	float *A = data[0];
-	float Adis = distance2(A, randOne, d);
-	for (int i = 1; i < n; i++) {
-		float tmpProd = distance2(data[i], randOne, d);
-		if (tmpProd > Adis) {
-			Adis = tmpProd;
-			A = data[i];
-		}
-	}
+	float *A = getFarestVector(randOne, n, d, data);
+	float *B = getFarestVector(A, n, d, data);
 
-	float *B = data[0];
-	float Bdis = distance2(B, A, d);
-	for (int i = 1; i < n; i++) {
-		float tmpDis = distance2(data[i], A, d);
-		if (tmpDis > Bdis) {
-			Bdis = tmpDis;
-			B = data[i];
-		}
-	}
-	
 	return make_pair(A, B);
 }
 

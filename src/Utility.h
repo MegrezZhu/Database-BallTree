@@ -18,18 +18,20 @@ pair<float*, float*> getSplitCenter(int n, int d, float** data);
 	using in-place swapping to split elements into two group
 	@return number of elements in the first group
 */
-int makeSplit(int, int, float**, int*, pair<float*, float*>);
+int makeSplit(int n, int d, float** data, int* id, pair<float*, float*> center);
 
-float innerProduct(float*, float*, int);
+float innerProduct(float* vecA, float* vecB, int d);
 
-float distance2(float*, float*, int);
+float distance2(float* vecA, float* vecB, int d);
 
-float distance(float*, float*, int);
+float distance(float* vecA, float* vecB, int d);
 
-float* mean(int, int, float**);
+float* mean(int n , int d, float** data);
 
-float radius(float*, int, int, float**);
+float radius(float* center, int n, int d, float** data);
 
 float norm(float* vec, int d);
+
+float* getFarestVector(float* ori, int n, int d, float** data);
 
 #endif

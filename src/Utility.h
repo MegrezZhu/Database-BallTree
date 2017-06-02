@@ -26,12 +26,14 @@ float distance2(float* vecA, float* vecB, int d);
 
 float distance(float* vecA, float* vecB, int d);
 
-float* mean(int n , int d, float** data);
+float* mean(int n, int d, float** data);
 
 float radius(float* center, int n, int d, float** data);
 
 float norm(float* vec, int d);
 
 float* getFarestVector(float* ori, int n, int d, float** data);
+
+float* center(int n, int d, float** data);
 
 #endif

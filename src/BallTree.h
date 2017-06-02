@@ -3,6 +3,7 @@
 
 #include <list>
 #include <fstream>
+#include <functional>
 using namespace std;
 
 // #define MINIMAL
@@ -28,6 +29,8 @@ private:
 	float *center;
 	float radius;
 	bool isleaf;
+	int tid;
+	static int _tid;
 
 	pair<int, float> _mipSearch(int d, float* query);
 	
@@ -46,11 +49,9 @@ public:
 		float** data,
 		int* id);
 
-	bool storeTree(
-		const char* index_path);
+	bool storeTree(const string& indexPath);
 
-	bool restoreTree(
-		const char* index_path);
+	bool restoreTree(const string& indexPath);
 	
 	int mipSearch(
 		int d,
@@ -74,11 +75,17 @@ public:
 
 	float getBound(float* query, int d);
 
-	void* serialize();	// 构造写文件时的二进制流
+	pair<char*, int> serialize();	// 构造写文件时的二进制流
 
 	static BallTree* deserialize(void* buffer);
 
 	bool isLeaf();
+
+	int countNode();
+	int countLeaf();
+	void traverse(function<void(BallTree *node)> func);
+
+	const int& getId() { return tid; }
 };
 
 #endif

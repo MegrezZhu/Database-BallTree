@@ -19,6 +19,7 @@ class Page {
 public:
 	static Page* createFromFile(const string &path);
 	static Page* create(int itemNum, int itemSize);
+	static Page* create(int itemSize);
 	~Page();
 
 	void writeBack(const string &path);
@@ -26,4 +27,6 @@ public:
 	const char* getBySlot(int slotNum);
 	void setBySlot(int slotNum, char* data);
 	bool isDirty();
+	int getCapacity() { return itemNum; }
+	const int& getId() { return pid; }
 };

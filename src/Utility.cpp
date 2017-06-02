@@ -63,6 +63,16 @@ float* mean(int n, int d, float** data) {
 	return res;
 }
 
+float* center(int n, int d, float** data) {
+	/*
+	auto split = getSplitCenter(n, d, data);
+	float* res = new float[d];
+	for (int i = 0; i < d; i++) res[i] = (split.first[i] + split.second[i]) / 2;
+	return res;
+	*/
+	return mean(n, d, data);
+}
+
 float radius(float* center, int n, int d, float** data) {
 	float res = 0;
 	for (int i = 0; i < n; i++) {

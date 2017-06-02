@@ -13,13 +13,17 @@ int readBinaryInt(istream &in);
 
 Page* Page::create(int itemNum, int itemSize) {
 	auto p = new Page();
-	p->pid = ++_pid;
+	p->pid = _pid++;
 	p->bitmap = new bool[itemNum]{ 0 };
 	p->data = new char[itemSize * itemNum]{ 0 };
 	p->dirty = true;
 	p->itemNum = itemNum;
 	p->itemSize = itemSize;
 	return p;
+}
+
+Page* Page::create(int itemSize) {
+	return Page::create(PAGE_SIZE / (itemSize + 1), itemSize);
 }
 
 Page* Page::createFromFile(const string &path) {
@@ -33,7 +37,8 @@ Page* Page::createFromFile(const string &path) {
 	p->itemNum = itemNum;
 	p->pid = pid;
 	_pid = max(_pid, pid);
-	p->bitmap = readBoolArr(in, itemNum);
+	//p->bitmap = readBoolArr(in, itemNum);
+	in.read((char*)p->bitmap, itemNum);
 	in.read(p->data, itemSize * itemNum);
 	in.close();
 	p->dirty = false;
@@ -53,13 +58,14 @@ void Page::writeBack() {
 void Page::writeBack(const string& filepath) {
 	if (!dirty) return;
 	ofstream out(filepath, std::ios::binary | std::ios::out);
-	out.seekp(PAGE_SIZE);
+	out.seekp(PAGE_SIZE - 1);
 	out.put('\0');
 	out.seekp(0);
 	writeBinaryInt(out, pid);
 	writeBinaryInt(out, itemSize);
 	writeBinaryInt(out, itemNum);
-	writeBoolArr(out, bitmap, itemNum);
+	// writeBoolArr(out, bitmap, itemNum);
+	out.write((char*)bitmap, itemNum);
 	out.write(data, itemSize * itemNum);
 	out.close();
 	dirty = false;

@@ -30,8 +30,10 @@ BallTree* BallTree::build(int n, int d, float** data, int* id) {
 		node->data = new list<float*>(data, data + n);
 		node->id = new list<int>(id, id + n);
 		leafCount++;
+		node->isleaf = true;
 	}
 	else {
+		node->isleaf = false;
 		auto split = getSplitCenter(n, d, data);
 		int numA = makeSplit(n, d, data, id, split);
 
@@ -112,3 +114,5 @@ bool BallTree::restoreTree(const char* path) {
 	// TO-DO
 	return true;
 }
+
+bool BallTree::isLeaf() { return isleaf; }

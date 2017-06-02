@@ -3,6 +3,7 @@
 
 #include "BallTree.h"
 #include "Utility.h"
+#include "Page.h"
 
 // #define MINIMAL
 #define NETFLIX
@@ -31,8 +32,24 @@ int n = 17770, d = 50;
 int qn = 1000;
 #endif // NETFLIX
 
+int mainTest();
+void pageTest();
 
 int main() {
+	mainTest();
+	//pageTest();
+}
+
+void pageTest() {
+	cout << sizeof(int);
+	auto page = Page::create(2, 5);
+	page->setBySlot(0, "1234");
+	page->setBySlot(1, "4567");
+	page->writeBack("tmp/1.page");
+	system("pause");
+}
+
+int mainTest() {
 	char data_path[L], query_path[L];
 	char index_path[L], output_path[L];
 	float** data = nullptr;

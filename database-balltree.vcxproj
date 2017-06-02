@@ -20,10 +20,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\BallTree.h" />
+    <ClInclude Include="src\Page.h" />
     <ClInclude Include="src\Utility.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\BallTree.cpp" />
+    <ClCompile Include="src\Page.cpp" />
     <ClCompile Include="src\test.cpp" />
     <ClCompile Include="src\Utility.cpp" />
   </ItemGroup>

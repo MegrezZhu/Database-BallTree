@@ -27,7 +27,7 @@ private:
 	list<int> *id;
 	float *center;
 	float radius;
-	bool isLeaf;
+	bool isleaf;
 
 	pair<int, float> _mipSearch(int d, float* query);
 	
@@ -74,7 +74,11 @@ public:
 
 	float getBound(float* query, int d);
 
-	void* toBuffer();	// 构造写文件时的二进制流
+	void* serialize();	// 构造写文件时的二进制流
+
+	static BallTree* deserialize(void* buffer);
+
+	bool isLeaf();
 };
 
 #endif

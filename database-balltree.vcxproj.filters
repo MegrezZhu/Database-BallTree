@@ -21,6 +21,9 @@
     <ClInclude Include="src\Utility.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="src\Page.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\BallTree.cpp">
@@ -30,6 +33,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\Utility.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Page.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

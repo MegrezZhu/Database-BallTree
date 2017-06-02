@@ -18,32 +18,37 @@ BallTree::~BallTree() {
 	// self-release
 	delete[] center;
 	delete data;
+	delete id;
 }
 
-bool BallTree::buildTree(int n, int d, float** data, int* id) {
-	if (!id) {
-		leafCount = 0;
-		id = new int[n];
-		for (int i = 0; i < n; i++) id[i] = i + 1;
-	}
-
-	center = mean(n, d, data);
-	radius = ::radius(center, n, d, data);
-	size = n;
+BallTree* BallTree::build(int n, int d, float** data, int* id) {
+	auto node = new BallTree();
+	node->center = mean(n, d, data);
+	node->radius = ::radius(node->center, n, d, data);
+	node->size = n;
 	if (n <= N0) {
-		this->data = new list<float*>(data, data + n);
-		this->id = new list<int>(id, id + n);
+		node->data = new list<float*>(data, data + n);
+		node->id = new list<int>(id, id + n);
 		leafCount++;
 	}
 	else {
 		auto split = getSplitCenter(n, d, data);
 		int numA = makeSplit(n, d, data, id, split);
 
-		left = new BallTree();
-		left->buildTree(numA, d, data, id);
-		right = new BallTree();
-		right->buildTree(n - numA, d, data + numA, id + numA);
+		node->left = build(numA, d, data, id);
+		node->right = build(n - numA, d, data + numA, id + numA);
 	}
+	return node;
+}
+
+bool BallTree::buildTree(int n, int d, float** data) {
+	leafCount = 0;
+	int* id = new int[n];
+	for (int i = 0; i < n; i++) id[i] = i + 1;
+
+	*this = *build(n, d, data, id);
+
+	delete[] id;
 	return true;
 }
 

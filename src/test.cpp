@@ -73,6 +73,7 @@ int main() {
 	*/
 
 	for (int i = 0; i < qn; i++) {
+		cout << i << ": ";
 		int index = ball_tree1.mipSearch(d, query[i]);
 		fprintf(fout, "%d\n", index);
 	}

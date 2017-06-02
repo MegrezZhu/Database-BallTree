@@ -27,6 +27,7 @@ private:
 	list<int> *id;
 	float *center;
 	float radius;
+	bool isLeaf;
 
 	pair<int, float> _mipSearch(int d, float* query);
 	
@@ -37,8 +38,13 @@ public:
 	bool buildTree(
 		int n,
 		int d,
+		float** data);
+
+	static BallTree* build(
+		int n,
+		int d,
 		float** data,
-		int* id = NULL);
+		int* id);
 
 	bool storeTree(
 		const char* index_path);
@@ -67,6 +73,8 @@ public:
 		float** data);
 
 	float getBound(float* query, int d);
+
+	void* toBuffer();	// 构造写文件时的二进制流
 };
 
 #endif

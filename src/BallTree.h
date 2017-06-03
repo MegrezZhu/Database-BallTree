@@ -1,39 +1,23 @@
 #ifndef __BALL_TREE_H
 #define __BALL_TREE_H
 
+#include "BallTreeNode.h"
+#include "Page.h"
 #include <list>
 #include <fstream>
 #include <functional>
 using namespace std;
 
-// #define MINIMAL
-
-#ifdef MINIMAL
-
-#define N0 2
-
-#endif
-#ifndef MINIMAL
-
-#define N0 20
-
-#endif
-
-
 class BallTree {
 private:
-	BallTree *left, *right;
 	int size, dimension;
-	list<float*> *data;
-	list<int> *id;
-	float *center;
-	float radius;
-	bool isleaf;
-	int tid;
-	static int _tid;
+	BallTreeNode* root;
 
-	pair<int, float> _mipSearch(int d, float* query);
-	
+	int leafNum, visitedLeafNum;
+
+	// the page that store tid - <pid, sid> pairs
+	Page *indexPage;
+
 public:
 	BallTree();
 	~BallTree();
@@ -43,11 +27,7 @@ public:
 		int d,
 		float** data);
 
-	static BallTree* build(
-		int n,
-		int d,
-		float** data,
-		int* id);
+	static BallTree* buildFromPage(int pid, int slotId);
 
 	bool storeTree(const string& indexPath);
 
@@ -73,19 +53,9 @@ public:
 		int d,
 		float** data);
 
-	float getBound(float* query, int d);
+	void traverse(function<void(BallTreeNode *node)> func);
 
-	pair<char*, int> serialize();	// 构造写文件时的二进制流
-
-	static BallTree* deserialize(void* buffer);
-
-	bool isLeaf();
-
-	int countNode();
-	int countLeaf();
-	void traverse(function<void(BallTree *node)> func);
-
-	const int& getId() { return tid; }
+	void countNode();
 };
 
 #endif

@@ -36,8 +36,7 @@ Page* Page::createFromFile(const string &path) {
 	p->itemSize = itemSize;
 	p->itemNum = itemNum;
 	p->pid = pid;
-	_pid = max(_pid, pid);
-	//p->bitmap = readBoolArr(in, itemNum);
+	_pid = max(_pid, pid);	// update max pid
 	in.read((char*)p->bitmap, itemNum);
 	in.read(p->data, itemSize * itemNum);
 	in.close();
@@ -52,7 +51,8 @@ Page::~Page() {
 }
 
 void Page::writeBack() {
-	writeBack(filepath);
+	if (!filepath.empty())
+		writeBack(filepath);
 }
 
 void Page::writeBack(const string& filepath) {

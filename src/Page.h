@@ -17,6 +17,7 @@ class Page {
 
 	static int _pid;
 public:
+	static Page* craeteFromFileWithPid(int pid);
 	static Page* createFromFile(const string &path);
 	static Page* create(int itemNum, int itemSize);
 	static Page* create(int itemSize);

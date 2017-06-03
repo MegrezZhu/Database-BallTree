@@ -6,116 +6,42 @@
 
 using namespace std;
 
-int BallTree::_tid = 0;
-int leafCal = 0;
-int leafCount = 0;
-
-BallTree::BallTree(): left(nullptr), right(nullptr), data(nullptr), id(nullptr), size(0), dimension(-1) {
-	tid = ++_tid;
+BallTree::BallTree(): root(nullptr), size(0), dimension(-1), leafNum(0), indexPage(nullptr) {
 }
 
 BallTree::~BallTree() {
-	if (left) delete left;
-	if (right) delete right;
-	
-	// self-release
-	delete[] center;
-	delete data;
-	delete id;
-}
-
-BallTree* BallTree::build(int n, int d, float** data, int* id) {
-	auto node = new BallTree();
-	node->dimension = d;
-	node->center = ::center(n, d, data);
-	node->radius = ::radius(node->center, n, d, data);
-	node->size = n;
-	if (n <= N0) {
-		node->data = new list<float*>(data, data + n);
-		node->id = new list<int>(id, id + n);
-		leafCount++;
-		node->isleaf = true;
-	}
-	else {
-		node->isleaf = false;
-		auto split = getSplitCenter(n, d, data);
-		int numA = makeSplit(n, d, data, id, split);
-
-		node->left = build(numA, d, data, id);
-		node->right = build(n - numA, d, data + numA, id + numA);
-	}
-	return node;
+	if (root) delete root;
 }
 
 bool BallTree::buildTree(int n, int d, float** data) {
-	leafCount = 0;
 	int* id = new int[n];
 	for (int i = 0; i < n; i++) id[i] = i + 1;
 
-	*this = *build(n, d, data, id);
+	size = n;
+	dimension = d;
+	root = BallTreeNode::build(n, d, data, id);
+
+	countNode();
 
 	delete[] id;
 	return true;
 }
 
 int BallTree::mipSearch(int d, float* query) {
-	leafCal = 0;
+	// leafCal = 0;
 	auto startTime = clock();
-	auto tmp = _mipSearch(d, query).first;
-	printf("done in %d ms. leaf counted: %d. Total leaves: %d\n", clock() - startTime, leafCal, leafCount);
+	auto tmp = root->mipSearch(query);
+	// printf("done in %d ms. leaf counted: %d. Total leaves: %d\n", clock() - startTime, leafCal, leafCount);
 	return tmp;
 }
 
-pair<int, float> BallTree::_mipSearch(int d, float* query) {
-	if (data) {
-		// leaf
-		leafCal++;
-		float maxProd = innerProduct(query, *data->begin(), d);
-		int maxi = *id->begin();
-		auto itData = ++data->begin();
-		auto itId = ++id->begin();
-		while (itData != data->end()) {
-			float prod = innerProduct(query, *itData, d);
-			if (prod > maxProd) {
-				maxProd = prod;
-				maxi = *itId;
-			}
-			itData++;
-			itId++;
-		}
-
-		return make_pair(maxi, maxProd);
-	}
-	else {
-		float leftBound = left->getBound(query, d), rightBound = right->getBound(query, d);
-		if (leftBound > rightBound) {
-			auto leftRes = left->_mipSearch(d, query);
-			if (leftRes.second >= rightBound)
-				return leftRes;
-			auto rightRes = right->_mipSearch(d, query);
-			return leftRes.second > rightRes.second ? leftRes : rightRes;
-		}
-		else {
-			auto rightRes = right->_mipSearch(d, query);
-			if (rightRes.second >= leftBound)
-				return rightRes;
-			auto leftRes = left->_mipSearch(d, query);
-			return leftRes.second > rightRes.second ? leftRes : rightRes;
-		}
-	}
-}
-
-float BallTree::getBound(float* query, int d) {
-	return innerProduct(query, center, d) + radius * norm(query, d);
-}
-
 bool BallTree::storeTree(const string& indexPath) {
-	auto indexPage = Page::create(9); // isLeaf: 1; pid, sid: 4
+	if (!indexPage) indexPage = Page::create(9); // isLeaf: 1; pid, sid: 4
 	auto nonLeafPage = Page::create(20 + dimension * 4);
 	auto leafPage = Page::create(16 + N0 * (4 + dimension * 4) + dimension * 4);
 	int leafCount = 0, nonLeafCount = 0;
 	char* buffer = new char[255];
-	traverse([this, indexPage, buffer, &leafCount, &leafPage, &nonLeafCount, &nonLeafPage, indexPath](BallTree *node) {
+	traverse([this, buffer, &leafCount, &leafPage, &nonLeafCount, &nonLeafPage, indexPath](BallTreeNode *node) {
 		bool leaf = node->isLeaf();
 		if (node->isLeaf()) {
 			if (leafCount == leafPage->getCapacity()) {
@@ -153,63 +79,19 @@ bool BallTree::storeTree(const string& indexPath) {
 }
 
 bool BallTree::restoreTree(const string& indexPath) {
-	// TO-DO
+	auto indexPage = Page::createFromFile(indexPath + "/0.page");
+
 	return true;
 }
 
-bool BallTree::isLeaf() { return isleaf; }
-
-void BallTree::traverse(function<void(BallTree *node)> func) {
-	func(this);
-	if (left) left->traverse(func);
-	if (right) right->traverse(func);
+void BallTree::traverse(function<void(BallTreeNode *node)> func) {
+	root->traverse(func);
 }
 
-pair<char*, int> BallTree::serialize() {
-	char* data;
-	if (isLeaf()) {
-		int len = 16 + N0 * (4 + dimension * 4) + dimension * 4; // tid, isLeaf, radius, size: 4 each; center: d*4; ids: size*4; vectors: size*d*4
-		data = new char[len];
-		memcpy(data, (char*)&tid, 4);
-		int _isleaf = isLeaf();
-		memcpy(data + 4, (char*)&_isleaf, 4);
-		memcpy(data + 8, (char*)center, dimension * 4);
-		memcpy(data + 12, (char*)&radius, 4);
-		memcpy(data + 16, (char*)&size, 4);
-		int i = 0;
-		for (auto _id : *this->id) {
-			memcpy(data + 20 + i * 4, &id, 4);
-			i++;
-		}
-		i = 0;
-		for (auto vec : *this->data) {
-			memcpy(data + 20 + dimension * 4 + i * dimension * 4, vec, dimension * 4);
-			i++;
-		}
-
-		return make_pair(data, len);
-	}
-	else {
-		int len = 20 + dimension * 4; // tid, isLeaf, leftId, rightId, radius: 4 each; center: dimension*4
-		data = new char[len];
-		memcpy(data, &tid, 4);
-		int _isleaf = isLeaf();
-		memcpy(data + 4, &_isleaf, 4);
-		memcpy(data + 8, &left->tid, 4);
-		memcpy(data + 12, &right->tid, 4);
-		memcpy(data + 16, &radius, 4);
-		memcpy(data + 20, center, dimension * 4);
-
-		return make_pair(data, len);
-	}
-}
-
-int BallTree::countLeaf() {
-	if (isLeaf()) return 1;
-	else return left->countLeaf() + right->countLeaf();
-}
-
-int BallTree::countNode() {
-	if (isLeaf()) return 1;
-	else return left->countLeaf() + right->countLeaf() + 1;
+void BallTree::countNode() {
+	int node = 0, leaf = 0;
+	traverse([&node, &leaf](BallTreeNode *node) {
+		node++;
+		if (node->isLeaf()) leaf++;
+	});
 }

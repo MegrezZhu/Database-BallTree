@@ -5,7 +5,7 @@
 #include "Utility.h"
 #include "Page.h"
 
-#define NETFLIX
+#define MNIST
 
 #ifdef MNIST
 char dataset[L] = "Mnist";
@@ -171,7 +171,7 @@ int mainTest() {
 	sprintf(index_path, "%s/index", dataset);
 	sprintf(output_path, "%s/dst/answer.txt", dataset);
 
-	srand(time(NULL));
+	srand(1111);
 
 	if (!read_data(n, d, data, data_path)) {
 		system("pause");

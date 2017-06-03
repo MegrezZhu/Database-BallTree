@@ -47,8 +47,8 @@ Page* Page::createFromFile(const string &path) {
 }
 
 Page::~Page() {
-	//delete[] data;
-	//delete[] bitmap;
+	delete[] data;
+	delete[] bitmap;
 }
 
 void Page::writeBack() {

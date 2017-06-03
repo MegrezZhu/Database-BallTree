@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <ctime>
 #include <tuple>
+#include <cstdint>
 
 using namespace std;
 
@@ -26,7 +27,7 @@ bool BallTree::buildTree(int n, int d, float** data) {
 	dimension = d;
 	root = BallTreeNode::build(n, d, data, id);
 
-	countNode();
+	//countNode();
 
 	delete[] id;
 	return true;
@@ -82,7 +83,7 @@ pair<int, float> BallTree::_mipSearch(BallTreeNode* root, float* query) {
 }
 
 bool BallTree::storeTree(const string& indexPath) {
-	if (!indexPage) indexPage = pagePool->create(9); // isLeaf: 1; pid, sid: 4
+	if (!indexPage) indexPage = pagePool->create(4); // pid, sid: 2 each
 	auto nonLeafPage = pagePool->create(21 + dimension * 4);
 	auto leafPage = pagePool->create(17 + N0 * (4 + dimension * 4) + dimension * 4);
 	int leafCount = 0, nonLeafCount = 0;
@@ -94,12 +95,12 @@ bool BallTree::storeTree(const string& indexPath) {
 				sprintf(buffer, "%s/%d.page", indexPath.c_str(), leafPage->getId());
 				leafPage->writeBack(buffer);
 				pagePool->remove(leafPage->getId());
-				leafPage = pagePool->create(16 + N0 * (4 + dimension * 4) + dimension * 4);
+				leafPage = pagePool->create(17 + N0 * (4 + dimension * 4) + dimension * 4);
 				leafCount = 0;
 			}
-			memcpy(buffer, &leaf, 1);
-			memcpy(buffer + 1, &leafPage->getId(), 4);
-			memcpy(buffer + 5, &leafCount, 4);
+			int16_t pid = leafPage->getId(), sid = leafCount;
+			memcpy(buffer, &pid, 2);
+			memcpy(buffer + 2, &sid, 2);
 			indexPage->setBySlot(node->getId(), buffer);
 			leafPage->setBySlot(leafCount++, node->serialize().first);
 		}
@@ -111,9 +112,9 @@ bool BallTree::storeTree(const string& indexPath) {
 				nonLeafPage = pagePool->create(20 + dimension * 4);
 				nonLeafCount = 0;
 			}
-			memcpy(buffer, &leaf, 1);
-			memcpy(buffer + 1, &nonLeafPage->getId(), 4);
-			memcpy(buffer + 5, &nonLeafCount, 4);
+			int16_t pid = nonLeafPage->getId(), sid = nonLeafCount;
+			memcpy(buffer, &pid, 2);
+			memcpy(buffer + 2, &sid, 2);
 			indexPage->setBySlot(node->getId(), buffer);
 			nonLeafPage->setBySlot(nonLeafCount++, node->serialize().first);
 		}
@@ -121,6 +122,7 @@ bool BallTree::storeTree(const string& indexPath) {
 	sprintf(buffer, "%s/%d.page", indexPath.c_str(), indexPage->getId());
 	indexPage->writeBack(buffer);
 	delete[] buffer;
+	printf("storage done.\n");
 	return true;
 }
 
@@ -164,10 +166,9 @@ Page* getPage(const string &indexPath, int pid) {
 
 tuple<bool, int, int> readIndex(Page* indexPage, int id) {
 	auto buffer = indexPage->getBySlot(id);
-	bool isLeaf;
-	int pid, sid;
-	memcpy(&isLeaf, buffer, 1);
-	memcpy(&pid, buffer + 1, 4);
-	memcpy(&sid, buffer + 5, 4);
-	return make_tuple(isLeaf, pid, sid);
+	bool isLeaf = false;	// not used anymore
+	int16_t pid, sid;
+	memcpy(&pid, buffer, 2);
+	memcpy(&sid, buffer + 2, 2);
+	return make_tuple(isLeaf, int(pid), int(sid));
 }

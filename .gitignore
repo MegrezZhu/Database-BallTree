@@ -289,5 +289,6 @@ __pycache__/
 *.xsd.cs
 
 answer.txt
+answer_naive.txt
 *.page
 /src/Yahoo

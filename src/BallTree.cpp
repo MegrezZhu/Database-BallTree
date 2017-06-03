@@ -35,9 +35,9 @@ bool BallTree::buildTree(int n, int d, float** data) {
 int BallTree::mipSearch(int d, float* query) {
 	visitedLeafNum = 0;
 	auto startTime = clock();
-	auto tmp = _mipSearch(root, query).first;
-	printf("done in %d ms. leaf counted: %d. Total leaves: %d\n", clock() - startTime, visitedLeafNum, leafNum);
-	return tmp;
+	auto tmp = _mipSearch(root, query);
+	printf("done in %d ms. leaf counted: %d. Total leaves: %d. MIP: %10lf ID: %d\n", clock() - startTime, visitedLeafNum, leafNum, tmp.second, tmp.first);
+	return tmp.first;
 }
 
 pair<int, float> BallTree::_mipSearch(BallTreeNode* root, float* query) {
@@ -49,7 +49,7 @@ pair<int, float> BallTree::_mipSearch(BallTreeNode* root, float* query) {
 		auto itData = ++root->data->begin();
 		auto itId = ++root->id->begin();
 		while (itData != root->data->end()) {
-			float prod = innerProduct(query, *itData, dimension);
+			float prod = innerProduct(query, *itData, root->dimension);
 			if (prod > maxProd) {
 				maxProd = prod;
 				maxi = *itId;
@@ -62,21 +62,19 @@ pair<int, float> BallTree::_mipSearch(BallTreeNode* root, float* query) {
 	}
 	else {
 		if (!root->left) root->left = restoreNode(root->leftId);
+		if (!root->right) root->right = restoreNode(root->rightId);
 		float leftBound = root->left->getBound(query), rightBound = root->right->getBound(query);
 		if (leftBound > rightBound) {
 			auto leftRes = _mipSearch(root->left, query);
 			if (leftRes.second >= rightBound)
 				return leftRes;
-			if (!root->right) root->right = restoreNode(root->rightId);
 			auto rightRes = _mipSearch(root->right, query);
 			return leftRes.second > rightRes.second ? leftRes : rightRes;
 		}
 		else {
-			if (!root->right) root->right = restoreNode(root->rightId);
 			auto rightRes = _mipSearch(root->right, query);
 			if (rightRes.second >= leftBound)
 				return rightRes;
-			if (!root->left) root->left = restoreNode(root->leftId);
 			auto leftRes = _mipSearch(root->left, query);
 			return leftRes.second > rightRes.second ? leftRes : rightRes;
 		}
@@ -141,19 +139,21 @@ void BallTree::traverse(BallTreeNode *root, function<void(BallTreeNode *node)> f
 }
 
 void BallTree::countNode() {
-	int node = 0, leaf = 0;
-	traverse(root, [&node, &leaf](BallTreeNode *node) {
+	int nodeNum = 0, leafNum = 0;
+	traverse(root, [&nodeNum, &leafNum](BallTreeNode *node) {
 		node++;
-		if (node->isLeaf()) leaf++;
+		if (node->isLeaf()) leafNum++;
 	});
-	leafNum = leaf;
+	this->leafNum = leafNum;
 }
 
 BallTreeNode* BallTree::restoreNode(int tid) {
 	auto info = readIndex(indexPage, tid);
 	auto page = pagePool->get(get<1>(info));
 	if (!page) page = pagePool->createFromFile(get<1>(info));
-	return BallTreeNode::deserialize(page->getBySlot(get<2>(info)));
+	auto node = BallTreeNode::deserialize(page->getBySlot(get<2>(info)));
+	if (dimension == -1) dimension = node->dimension;
+	return node;
 }
 
 Page* getPage(const string &indexPath, int pid) {

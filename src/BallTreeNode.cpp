@@ -38,6 +38,8 @@ BallTreeNode* BallTreeNode::build(int n, int d, float** data, int* id) {
 
 		node->left = build(numA, d, data, id);
 		node->right = build(n - numA, d, data + numA, id + numA);
+		node->leftId = node->left->getId();
+		node->rightId = node->right->getId();
 	}
 	return node;
 }
@@ -60,7 +62,7 @@ pair<char*, int> BallTreeNode::serialize() {
 		memcpy((data += 4), &size, 4);
 		int i = 0;
 		for (auto _id : *this->id) {
-			memcpy((data += 4), &id, 4);
+			memcpy((data += 4), &_id, 4);
 			i++;
 		}
 		i = 0;
@@ -91,6 +93,7 @@ pair<char*, int> BallTreeNode::serialize() {
 }
 
 BallTreeNode* BallTreeNode::deserialize(const char* buffer) {
+	auto head = buffer;
 	auto node = new BallTreeNode();
 	memcpy(&node->isleaf, buffer, 1);
 	memcpy(&node->tid, (buffer += 1), 4);
@@ -102,13 +105,15 @@ BallTreeNode* BallTreeNode::deserialize(const char* buffer) {
 		memcpy(&node->size, (buffer += 4), 4);
 		auto ids = new int[node->size];
 		auto vecs = new float[node->size * node->dimension];
-		memcpy(ids, (buffer += 4), node->dimension * 4);
-		memcpy(vecs, (buffer += node->dimension * 4), node->size * node->dimension * 4);
+		memcpy(ids, (buffer += 4), node->size * 4);
+		memcpy(vecs, (buffer += node->size * 4), node->size * node->dimension * 4);
 		node->id = new list<int>(ids, ids + node->size);
 		node->data = new list<float*>();
 		for (int i = 0; i < node->size; i++) {
 			node->data->push_back(vecs + i * node->dimension);
 		}
+		delete[] ids;
+		// delete[] vecs;
 	}
 	else {
 		memcpy(&node->dimension, (buffer += 4), 4);

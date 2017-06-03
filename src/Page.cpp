@@ -21,11 +21,14 @@ Page* Page::create(int itemNum, int itemSize) {
 }
 
 Page* Page::create(int itemSize) {
-	return Page::create(PAGE_SIZE / (itemSize + 1), itemSize);
+	return Page::create((PAGE_SIZE - 32) / (itemSize + 1), itemSize); // 32: safe zone
 }
 
 Page* Page::createFromFile(const string &path) {
 	ifstream in(path, std::ios::binary);
+	if (!in) {
+		throw new exception(("open failed with path: " + path).c_str());
+	}
 	int pid, itemNum, itemSize;
 	pid = readBinaryInt(in);
 	itemSize = readBinaryInt(in);
@@ -44,8 +47,8 @@ Page* Page::createFromFile(const string &path) {
 }
 
 Page::~Page() {
-	delete[] data;
-	delete[] bitmap;
+	//delete[] data;
+	//delete[] bitmap;
 }
 
 void Page::writeBack() {
@@ -70,7 +73,7 @@ void Page::writeBack(const string& filepath) {
 }
 
 const char* Page::getBySlot(int slotNum) {
-	if (bitmap[slotNum]) return data + slotNum;
+	if (bitmap[slotNum]) return data + slotNum * itemSize;
 	else return NULL;
 }
 

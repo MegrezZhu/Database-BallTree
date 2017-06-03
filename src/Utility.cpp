@@ -136,5 +136,5 @@ pair<int, float> naiveSolve(float* query, int n, int d, float** data) {
 			maxi = i;
 		}
 	}
-	return make_pair(maxi, MIP);
+	return make_pair(maxi + 1, MIP);
 }

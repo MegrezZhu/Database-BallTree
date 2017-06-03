@@ -1,5 +1,4 @@
-#ifndef __BALL_TREE_H
-#define __BALL_TREE_H
+#pragma once
 
 #include "BallTreeNode.h"
 #include "Page.h"
@@ -18,6 +17,8 @@ private:
 	// the page that store tid - <pid, sid> pairs
 	Page *indexPage;
 
+	pair<int, float> _mipSearch(BallTreeNode* root, float* query);
+
 public:
 	BallTree();
 	~BallTree();
@@ -26,8 +27,6 @@ public:
 		int n,
 		int d,
 		float** data);
-
-	static BallTree* buildFromPage(int pid, int slotId);
 
 	bool storeTree(const string& indexPath);
 
@@ -53,9 +52,9 @@ public:
 		int d,
 		float** data);
 
-	void traverse(function<void(BallTreeNode *node)> func);
+	void traverse(BallTreeNode *root, function<void(BallTreeNode *node)> func);
+
+	BallTreeNode* restoreNode(int tid);
 
 	void countNode();
 };
-
-#endif

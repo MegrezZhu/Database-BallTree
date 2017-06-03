@@ -34,10 +34,12 @@ int qn = 1000;
 
 int mainTest();
 void pageTest();
+void readTest();
 
 int main() {
 	mainTest();
 	//pageTest();
+	//readTest();
 }
 
 void pageTest() {
@@ -79,7 +81,6 @@ int mainTest() {
 		return 1;
 	}
 
-	/*
 	BallTree ball_tree2; 
 	ball_tree2.restoreTree(index_path);
 	for (int i = 0; i < qn; i++) {
@@ -87,14 +88,15 @@ int mainTest() {
 		fprintf(fout, "%d\n", index);
 	}
 	fclose(fout);
-	*/
 
+	/*
 	for (int i = 0; i < qn; i++) {
 		cout << i << ": ";
 		int index = ball_tree1.mipSearch(d, query[i]);
 		fprintf(fout, "%d\n", index);
 	}
 	fclose(fout);
+	*/
 
 	for (int i = 0; i < n; i++) {
 		delete[] data[i];
@@ -106,4 +108,54 @@ int mainTest() {
 	
 	system("pause");
 	return 0;
+}
+
+void readTest() {
+	char data_path[L], query_path[L];
+	char index_path[L], output_path[L];
+	float** data = nullptr;
+	float** query = nullptr;
+
+	sprintf(data_path, "%s/src/dataset.txt", dataset);
+	sprintf(query_path, "%s/src/query.txt", dataset);
+	sprintf(index_path, "%s/index", dataset);
+	sprintf(output_path, "%s/dst/answer.txt", dataset);
+
+	srand(time(NULL));
+
+	if (!read_data(n, d, data, data_path)) {
+		system("pause");
+	}
+
+	if (!read_data(qn, d, query, query_path));
+	FILE* fout = fopen(output_path, "w");
+	if (!fout) {
+		printf("can't open %s!\n", output_path);
+		system("pause");
+	}
+
+	BallTree ball_tree2;
+	ball_tree2.restoreTree(index_path);
+	for (int i = 0; i < qn; i++) {
+		int index = ball_tree2.mipSearch(d, query[i]);
+		fprintf(fout, "%d\n", index);
+	}
+	fclose(fout);
+
+	/*
+	for (int i = 0; i < qn; i++) {
+	cout << i << ": ";
+	int index = ball_tree1.mipSearch(d, query[i]);
+	fprintf(fout, "%d\n", index);
+	}
+	fclose(fout);
+	*/
+
+	for (int i = 0; i < n; i++) {
+		delete[] data[i];
+	}
+
+	for (int i = 0; i < qn; i++) {
+		delete[] query[i];
+	}
 }

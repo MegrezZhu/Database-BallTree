@@ -22,12 +22,14 @@
     <ClInclude Include="src\BallTree.h" />
     <ClInclude Include="src\BallTreeNode.h" />
     <ClInclude Include="src\Page.h" />
+    <ClInclude Include="src\PagePool.h" />
     <ClInclude Include="src\Utility.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\BallTree.cpp" />
     <ClCompile Include="src\BallTreeNode.cpp" />
     <ClCompile Include="src\Page.cpp" />
+    <ClCompile Include="src\PagePool.cpp" />
     <ClCompile Include="src\test.cpp" />
     <ClCompile Include="src\Utility.cpp" />
   </ItemGroup>

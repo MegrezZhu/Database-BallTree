@@ -1,6 +1,4 @@
 #include "Page.h"
-#include <utility>
-#include <iostream>
 
 int Page::_pid = 0;
 

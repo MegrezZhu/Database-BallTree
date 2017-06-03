@@ -1,5 +1,7 @@
 #pragma once
 
+#include "PagePool.h"
+
 #include <list>
 #include <fstream>
 #include <functional>
@@ -19,8 +21,7 @@ using namespace std;
 #endif
 
 class BallTreeNode {
-private:
-	BallTreeNode *left, *right;
+public:
 	int size, dimension;
 	list<float*> *data;
 	list<int> *id;
@@ -28,12 +29,12 @@ private:
 	float radius;
 	bool isleaf;
 	int tid;
+	int leftId, rightId;
 	static int _tid;
 
-	pair<int, float> _mipSearch(float* query);
-
 	BallTreeNode();
-public:
+	BallTreeNode *left, *right;
+
 	~BallTreeNode();
 
 	static BallTreeNode* build(
@@ -42,8 +43,7 @@ public:
 		float** data,
 		int* id);
 
-	int mipSearch(
-		float* query);
+	static BallTreeNode* buildFromPage(int pid, int sid);
 
 	// optional
 	bool insertData(
@@ -63,11 +63,9 @@ public:
 
 	pair<char*, int> serialize();	// 构造写文件时的二进制流
 
-	static BallTreeNode* deserialize(void* buffer);
+	static BallTreeNode* deserialize(const char* buffer);
 
 	bool isLeaf() { return isleaf; }
-
-	void traverse(function<void(BallTreeNode *node)> func);
 
 	const int& getId() { return tid; }
 };

@@ -36,4 +36,6 @@ float* getFarestVector(float* ori, int n, int d, float** data);
 
 float* center(int n, int d, float** data);
 
+pair<int, float> naiveSolve(float* query, int n, int d, float** data);
+
 #endif

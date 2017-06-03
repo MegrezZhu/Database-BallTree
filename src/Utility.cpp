@@ -124,3 +124,17 @@ int makeSplit(int n, int d, float** data, int* id, pair<float*, float*> centers)
 
 	return numA;
 }
+
+
+pair<int, float> naiveSolve(float* query, int n, int d, float** data) {
+	int maxi = 0;
+	float MIP = innerProduct(query, data[0], d);
+	for (int i = 1; i < n; i++) {
+		auto prod = innerProduct(query, data[i], d);
+		if (prod > MIP) {
+			MIP = prod;
+			maxi = i;
+		}
+	}
+	return make_pair(maxi, MIP);
+}

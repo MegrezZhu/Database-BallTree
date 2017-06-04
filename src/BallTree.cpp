@@ -109,7 +109,7 @@ bool BallTree::storeTree(const string& indexPath) {
 				sprintf(buffer, "%s/%d.page", indexPath.c_str(), nonLeafPage->getId());
 				nonLeafPage->writeBack(buffer);
 				pagePool->remove(nonLeafPage->getId());
-				nonLeafPage = pagePool->create(20 + dimension * 4);
+				nonLeafPage = pagePool->create(21 + dimension * 4);
 				nonLeafCount = 0;
 			}
 			int16_t pid = nonLeafPage->getId(), sid = nonLeafCount;

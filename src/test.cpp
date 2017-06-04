@@ -29,13 +29,13 @@ int qn = 1;
 char dataset[L] = "Netflix";
 int n = 17770, d = 50;
 int qn = 1000;
-#endif // NETFLIX
+#endif
 
 #ifdef RANDOM
 char dataset[L] = "Random";
 int n = 1000, d = 10;
 int qn = 10;
-#endif // NETFLIX
+#endif
 
 int mainTest();
 void pageTest();
@@ -44,6 +44,7 @@ int simpleTest();
 int naive();
 
 int main() {
+	srand(2333);
 	mainTest();
 	//simpleTest();
 	//pageTest();
@@ -70,8 +71,6 @@ int simpleTest() {
 	sprintf(query_path, "%s/src/query.txt", dataset);
 	sprintf(index_path, "%s/index", dataset);
 	sprintf(output_path, "%s/dst/answer.txt", dataset);
-
-	srand(time(NULL));
 
 	if (!read_data(n, d, data, data_path)) {
 		system("pause");
@@ -118,8 +117,6 @@ int naive() {
 	sprintf(query_path, "%s/src/query.txt", dataset);
 	sprintf(index_path, "%s/index", dataset);
 	sprintf(output_path, "%s/dst/answer_naive.txt", dataset);
-
-	srand(time(NULL));
 
 	if (!read_data(n, d, data, data_path)) {
 		system("pause");
@@ -171,8 +168,6 @@ int mainTest() {
 	sprintf(index_path, "%s/index", dataset);
 	sprintf(output_path, "%s/dst/answer.txt", dataset);
 
-	srand(1111);
-
 	if (!read_data(n, d, data, data_path)) {
 		system("pause");
 		return 1;
@@ -219,8 +214,6 @@ void readTest() {
 	sprintf(query_path, "%s/src/query.txt", dataset);
 	sprintf(index_path, "%s/index", dataset);
 	sprintf(output_path, "%s/dst/answer.txt", dataset);
-
-	srand(time(NULL));
 
 	if (!read_data(n, d, data, data_path)) {
 		system("pause");

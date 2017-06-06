@@ -9,15 +9,14 @@ using namespace std;
 
 class BallTree {
 private:
-	int size, dimension;  //数据量大小以及纬度
+	int size, dimension;  //数据量大小以及维度
 	BallTreeNode* root;	  //根节点
 
-	int leafNum, visitedLeafNum;	//叶子节点数目以及搜索过程中访问的节点数目
+	int leafNum, visitedLeafNum;	//叶子节点数目、搜索过程中访问的节点数目
 
-	// the page that store tid - <pid, sid> pairs
-	Page *indexPage;	//专门用于存取每个节点的tid对应寻到那个page的那个槽号
+	Page *indexPage;	//索引页：存储了所有节点在存储页中的位置（所在的page和slot）
 
-	pair<int, float> _mipSearch(BallTreeNode* root, float* query);		//查询函数
+	pair<int, float> _mipSearch(BallTreeNode* root, float* query);   //查找时的递归函数
 
 public:
 	BallTree();

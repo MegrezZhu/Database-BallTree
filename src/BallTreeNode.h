@@ -23,7 +23,7 @@ using namespace std;
 
 class BallTreeNode {
 public:
-	int size, dimension;	//数据量大小，纬度
+	int size, dimension;	//数据量大小，维度
 	list<float*> *data;		//节点中的点的具体数据
 	list<int> *id;			//节点中每个点的id
 	float *center;			//圆心

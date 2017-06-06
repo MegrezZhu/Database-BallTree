@@ -36,7 +36,7 @@ bool BallTree::buildTree(int n, int d, float** data) {
 
 int BallTree::mipSearch(int d, float* query) {
 	visitedLeafNum = 0;
-	auto startTime = clock();
+	auto startTime = clock();	//用于计算查询时间
 	auto tmp = _mipSearch(root, query);
 	printf("done in %d ms. leaf visited: %d. MIP: %10lf ID: %d\n", (clock() - startTime) * 1000 / CLOCKS_PER_SEC, visitedLeafNum, tmp.second, tmp.first);
 	return tmp.first;
@@ -50,7 +50,7 @@ pair<int, float> BallTree::_mipSearch(BallTreeNode* root, float* query) {
 		int maxi = *root->id->begin();
 		auto itData = ++root->data->begin();
 		auto itId = ++root->id->begin();
-		while (itData != root->data->end()) {
+		while (itData != root->data->end()) {	//找到所有点中的内积最大的点
 			float prod = innerProduct(query, *itData, root->dimension);
 			if (prod > maxProd) {
 				maxProd = prod;
@@ -60,7 +60,7 @@ pair<int, float> BallTree::_mipSearch(BallTreeNode* root, float* query) {
 			itId++;
 		}
 
-		return make_pair(maxi, maxProd);	//到达叶子节点并计算返回当前最大内积
+		return make_pair(maxi, maxProd);	//返回当前最大内积的点
 	}
 	else {	//非叶子节点
 		if (!root->left) root->left = restoreNode(root->leftId);

@@ -42,7 +42,7 @@ int BallTree::mipSearch(int d, float* query) {
 }
 
 pair<int, float> BallTree::_mipSearch(BallTreeNode* root, float* query) {
-	if (root->isLeaf()) {	//深度到达子节点
+	if (root->isLeaf()) {	//深度到达叶子节点
 		// leaf
 		visitedLeafNum++;
 		float maxProd = innerProduct(query, *root->data->begin(), root->dimension);	//调用Utility函数求内积
@@ -59,24 +59,25 @@ pair<int, float> BallTree::_mipSearch(BallTreeNode* root, float* query) {
 			itId++;
 		}
 
-		return make_pair(maxi, maxProd);
+		return make_pair(maxi, maxProd);	//到达叶子节点并计算返回当前最大内积
 	}
 	else {	//非子节点
 		if (!root->left) root->left = restoreNode(root->leftId);
 		if (!root->right) root->right = restoreNode(root->rightId);
-		float leftBound = root->left->getBound(query), rightBound = root->right->getBound(query);	//求左右最大可能边界
+		float leftBound = root->left->getBound(query), rightBound = root->right->getBound(query);	//求左右最大可能内积
+		//根据可能内积大小判断进去哪个子树
 		if (leftBound > rightBound) {
-			auto leftRes = _mipSearch(root->left, query);
-			if (leftRes.second >= rightBound)
+			auto leftRes = _mipSearch(root->left, query);	//进入左子树寻找比较好的当前最大内积
+			if (leftRes.second >= rightBound)	//根据当前最大内积大于某节点的最大可能内积，直接淘汰该节点
 				return leftRes;
 			auto rightRes = _mipSearch(root->right, query);
-			return leftRes.second > rightRes.second ? leftRes : rightRes;
+			return leftRes.second > rightRes.second ? leftRes : rightRes;	//回溯过程中仍需要遍历其他节点搜索最大内积
 		}
 		else {
 			auto rightRes = _mipSearch(root->right, query);
 			if (rightRes.second >= leftBound)
 				return rightRes;
-			auto leftRes = _mipSearch(root->left, query);
+			auto leftRes = _mipSearch(root->left, query);	
 			return leftRes.second > rightRes.second ? leftRes : rightRes;
 		}
 	}

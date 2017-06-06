@@ -132,8 +132,10 @@ int naive() {
 	}
 
 	for (int i = 0; i < qn; i++) {
-		int index = naiveSolve(query[i], n, d, data).first;
-		fprintf(fout, "%d\n", index);
+		auto startTime = clock();
+		auto res = naiveSolve(query[i], n, d, data);
+		fprintf(fout, "%d\n", res.first);
+		printf("done in %d ms.\n", (clock() - startTime) * 1000 / CLOCKS_PER_SEC);
 	}
 	fclose(fout);
 

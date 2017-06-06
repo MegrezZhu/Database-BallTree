@@ -1,4 +1,7 @@
 #include "Page.h"
+#include <cstring>
+
+using namespace std;
 
 int Page::_pid = 0;
 
@@ -26,9 +29,6 @@ Page* Page::create(int itemSize) {
 
 Page* Page::createFromFile(const string &path) {
 	ifstream in(path, std::ios::binary);
-	if (!in) {
-		throw new exception(("open failed with path: " + path).c_str());
-	}
 	int pid, itemNum, itemSize;
 	pid = readBinaryInt(in);
 	itemSize = readBinaryInt(in);

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef BALLTREE
+#define BALLTREE
 
 #include "BallTreeNode.h"
 #include "Page.h"
@@ -65,3 +66,5 @@ public:
 	// 统计结点数和叶结点数，未用
 	void countNode();
 };
+
+#endif

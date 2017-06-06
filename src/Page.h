@@ -1,4 +1,5 @@
-#pragma once
+#ifndef PAGE
+#define PAGE
 
 #include <vector>
 #include <string>
@@ -37,3 +38,5 @@ public:
 	int getCapacity() { return itemNum; }
 	const int& getId() { return pid; }
 };
+
+#endif

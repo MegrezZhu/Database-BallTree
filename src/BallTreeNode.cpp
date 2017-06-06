@@ -1,5 +1,6 @@
 #include "BallTreeNode.h"
 #include "Utility.h"
+#include <cstring>
 
 using namespace std;
 

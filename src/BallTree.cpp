@@ -6,6 +6,7 @@
 #include <ctime>
 #include <tuple>
 #include <cstdint>
+#include <cstring>
 
 using namespace std;
 
@@ -37,7 +38,7 @@ int BallTree::mipSearch(int d, float* query) {
 	visitedLeafNum = 0;
 	auto startTime = clock();
 	auto tmp = _mipSearch(root, query);
-	printf("done in %d ms. leaf counted: %d. Total leaves: %d. MIP: %10lf ID: %d\n", clock() - startTime, visitedLeafNum, leafNum, tmp.second, tmp.first);
+	printf("done in %d ms. leaf visited: %d. MIP: %10lf ID: %d\n", (clock() - startTime) * 1000 / CLOCKS_PER_SEC, visitedLeafNum, tmp.second, tmp.first);
 	return tmp.first;
 }
 
@@ -61,7 +62,7 @@ pair<int, float> BallTree::_mipSearch(BallTreeNode* root, float* query) {
 
 		return make_pair(maxi, maxProd);	//到达叶子节点并计算返回当前最大内积
 	}
-	else {	//非子节点
+	else {	//非叶子节点
 		if (!root->left) root->left = restoreNode(root->leftId);
 		if (!root->right) root->right = restoreNode(root->rightId);
 		float leftBound = root->left->getBound(query), rightBound = root->right->getBound(query);	//求左右最大可能内积

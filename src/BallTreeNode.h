@@ -1,4 +1,5 @@
-#pragma once
+#ifndef BALLTREENODE
+#define BALLTREENODE
 
 #include "PagePool.h"
 
@@ -77,3 +78,5 @@ public:
 
 	const int& getId() { return tid; }
 };
+
+#endif

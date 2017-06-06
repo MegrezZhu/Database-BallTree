@@ -1,4 +1,5 @@
-#pragma once
+#ifndef PAGEPOOL
+#define PAGEPOOL
 
 #include "Page.h"
 
@@ -35,3 +36,5 @@ public:
 };
 
 #define pagePool PagePool::getInstance()
+
+#endif

@@ -37,7 +37,8 @@ int BallTree::mipSearch(int d, float* query) {
 	visitedLeafNum = 0;
 	auto startTime = clock();
 	auto tmp = _mipSearch(root, query);
-	printf("done in %d ms. leaf counted: %d. Total leaves: %d. MIP: %10lf ID: %d\n", clock() - startTime, visitedLeafNum, leafNum, tmp.second, tmp.first);
+	printf("done in %d ms. leaf counted: %d. Total leaves: %d. MIP: %10lf ID: %d\n",
+		clock() - startTime, visitedLeafNum, leafNum, tmp.second, tmp.first);
 	return tmp.first;
 }
 

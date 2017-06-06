@@ -83,29 +83,32 @@ pair<int, float> BallTree::_mipSearch(BallTreeNode* root, float* query) {
 }
 
 bool BallTree::storeTree(const string& indexPath) {
-	if (!indexPage) indexPage = pagePool->create(4); // pid, sid: 2 each
+	if (!indexPage) indexPage = pagePool->create(4);	// 如果还未加载index页，则从硬盘中加载
+														// pid, sid: 页号槽号各2字节
 	auto nonLeafPage = pagePool->create(21 + dimension * 4);
+														// 用于保存非叶结点
 	auto leafPage = pagePool->create(17 + N0 * (4 + dimension * 4) + dimension * 4);
-	int leafCount = 0, nonLeafCount = 0;
+														// 用于保存叶子结点
+	int leafCount = 0, nonLeafCount = 0;				// 统计页文件中已存的item个数
 	char* buffer = new char[255];
 	traverse(root, [this, buffer, &leafCount, &leafPage, &nonLeafCount, &nonLeafPage, indexPath](BallTreeNode *node) {
 		bool leaf = node->isLeaf();
 		if (node->isLeaf()) {
-			if (leafCount == leafPage->getCapacity()) {
+			if (leafCount == leafPage->getCapacity()) { // 保存叶结点的页已满、新建一页
 				sprintf(buffer, "%s/%d.page", indexPath.c_str(), leafPage->getId());
 				leafPage->writeBack(buffer);
 				pagePool->remove(leafPage->getId());
 				leafPage = pagePool->create(17 + N0 * (4 + dimension * 4) + dimension * 4);
 				leafCount = 0;
 			}
-			int16_t pid = leafPage->getId(), sid = leafCount;
+			int16_t pid = leafPage->getId(), sid = leafCount;	// 用16位整数存，节省空间
 			memcpy(buffer, &pid, 2);
 			memcpy(buffer + 2, &sid, 2);
-			indexPage->setBySlot(node->getId(), buffer);
+			indexPage->setBySlot(node->getId(), buffer);		// 存id -> <pid,sid> 的索引
 			leafPage->setBySlot(leafCount++, node->serialize().first);
 		}
 		else {
-			if (nonLeafCount == nonLeafPage->getCapacity()) {
+			if (nonLeafCount == nonLeafPage->getCapacity()) {	// 保存非叶结点的页已满则新建
 				sprintf(buffer, "%s/%d.page", indexPath.c_str(), nonLeafPage->getId());
 				nonLeafPage->writeBack(buffer);
 				pagePool->remove(nonLeafPage->getId());
@@ -120,7 +123,7 @@ bool BallTree::storeTree(const string& indexPath) {
 		}
 	}); 
 	sprintf(buffer, "%s/%d.page", indexPath.c_str(), indexPage->getId());
-	indexPage->writeBack(buffer);
+	indexPage->writeBack(buffer);					// 写回索引页
 	delete[] buffer;
 	printf("storage done.\n");
 	return true;
@@ -128,7 +131,7 @@ bool BallTree::storeTree(const string& indexPath) {
 
 bool BallTree::restoreTree(const string& indexPath) {
 	pagePool->setBaseDir(indexPath);
-	indexPage = pagePool->createFromFile(0);
+	indexPage = pagePool->createFromFile(0);		// 0号页文件为索引页
 	root = restoreNode(0);
 	return true;
 }

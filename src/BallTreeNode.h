@@ -62,8 +62,15 @@ public:
 
 	float getBound(float* query);
 
-	pair<char*, int> serialize();	// 构造写文件时的二进制流
+	/* 
+		序列化，构造写文件时的二进制流
+		@return pair<数据头指针，数据长度>
+	*/
+	pair<char*, int> serialize();	
 
+	/*
+		反序列化，从二进制流中恢复一个结点
+	*/
 	static BallTreeNode* deserialize(const char* buffer);
 
 	bool isLeaf() { return isleaf; }

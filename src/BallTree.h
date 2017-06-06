@@ -29,7 +29,7 @@ public:
 		float** data);
 
 	bool storeTree(const string& indexPath);
-
+	
 	bool restoreTree(const string& indexPath);
 	
 	int mipSearch(
@@ -52,9 +52,16 @@ public:
 		int d,
 		float** data);
 
+	/*
+		遍历整棵Balltree
+	*/
 	void traverse(BallTreeNode *root, function<void(BallTreeNode *node)> func);
 
+	/*
+		从文件中读取一个结点
+	*/
 	BallTreeNode* restoreNode(int tid);
 
+	// 统计结点数和叶结点数，未用
 	void countNode();
 };

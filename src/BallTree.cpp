@@ -21,11 +21,11 @@ BallTree::~BallTree() {
 
 bool BallTree::buildTree(int n, int d, float** data) {
 	int* id = new int[n];
-	for (int i = 0; i < n; i++) id[i] = i + 1;
+	for (int i = 0; i < n; i++) id[i] = i + 1;	//节点中每个点对应的id
 
 	size = n;
 	dimension = d;
-	root = BallTreeNode::build(n, d, data, id);
+	root = BallTreeNode::build(n, d, data, id);		//调用建立节点函数
 
 	//countNode();
 
@@ -42,10 +42,10 @@ int BallTree::mipSearch(int d, float* query) {
 }
 
 pair<int, float> BallTree::_mipSearch(BallTreeNode* root, float* query) {
-	if (root->isLeaf()) {
+	if (root->isLeaf()) {	//深度到达子节点
 		// leaf
 		visitedLeafNum++;
-		float maxProd = innerProduct(query, *root->data->begin(), root->dimension);
+		float maxProd = innerProduct(query, *root->data->begin(), root->dimension);	//调用Utility函数求内积
 		int maxi = *root->id->begin();
 		auto itData = ++root->data->begin();
 		auto itId = ++root->id->begin();
@@ -61,10 +61,10 @@ pair<int, float> BallTree::_mipSearch(BallTreeNode* root, float* query) {
 
 		return make_pair(maxi, maxProd);
 	}
-	else {
+	else {	//非子节点
 		if (!root->left) root->left = restoreNode(root->leftId);
 		if (!root->right) root->right = restoreNode(root->rightId);
-		float leftBound = root->left->getBound(query), rightBound = root->right->getBound(query);
+		float leftBound = root->left->getBound(query), rightBound = root->right->getBound(query);	//求左右最大可能边界
 		if (leftBound > rightBound) {
 			auto leftRes = _mipSearch(root->left, query);
 			if (leftRes.second >= rightBound)

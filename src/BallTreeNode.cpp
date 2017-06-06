@@ -23,19 +23,22 @@ BallTreeNode::~BallTreeNode() {
 BallTreeNode* BallTreeNode::build(int n, int d, float** data, int* id) {
 	auto node = new BallTreeNode();
 	node->dimension = d;
-	node->center = ::center(n, d, data);
-	node->radius = ::radius(node->center, n, d, data);
+	node->center = ::center(n, d, data);				//调用Utility中的center函数求圆心
+	node->radius = ::radius(node->center, n, d, data);  //调用Utility中的center函数求半径
 	node->size = n;
-	if (n <= N0) {
+	if (n <= N0) {	//叶子节点操作
 		node->data = new list<float*>(data, data + n);
 		node->id = new list<int>(id, id + n);
 		node->isleaf = true;
 	}
-	else {
+	else {	//非叶子节点操作
 		node->isleaf = false;
+
+		//调用Utility函数进行分割操作
 		auto split = getSplitCenter(n, d, data);
 		int numA = makeSplit(n, d, data, id, split);
 
+		//通过递归直至非叶子节点变为叶子节点
 		node->left = build(numA, d, data, id);
 		node->right = build(n - numA, d, data + numA, id + numA);
 		node->leftId = node->left->getId();

@@ -22,21 +22,22 @@ using namespace std;
 
 class BallTreeNode {
 public:
-	int size, dimension;
-	list<float*> *data;
-	list<int> *id;
-	float *center;
-	float radius;
-	bool isleaf;
-	int tid;
-	int leftId, rightId;
-	static int _tid;
+	int size, dimension;	//数据量大小，纬度
+	list<float*> *data;		//节点中的点的具体数据
+	list<int> *id;			//节点中每个点的id
+	float *center;			//圆心
+	float radius;			//半径
+	bool isleaf;			//是否叶子节点
+	int tid;				//节点本身id
+	int leftId, rightId;	//左右子节点id
+	static int _tid;		
 
 	BallTreeNode();
 	BallTreeNode *left, *right;
 
 	~BallTreeNode();
 
+	//Node Building
 	static BallTreeNode* build(
 		int n,
 		int d,
